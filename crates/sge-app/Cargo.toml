@@ -8,6 +8,7 @@ rust-version.workspace = true
 
 [dependencies]
 sge-domain = { path = "../sge-domain" }
+sge-evolution = { path = "../sge-evolution" }
 sge-protocol = { path = "../sge-protocol" }
 sge-store = { path = "../sge-store" }
 serde.workspace = true

@@ -39,11 +39,12 @@ SINGULARITY ENGINE 以“资产协议 + 多维评测 + 内部 Git 谱系 + 人�
 ```text
 sge init [PATH] [--json]
 sge import <PATH> [--workspace <WORKSPACE>] [--json]
+sge scan <TARGET> [--workspace <WORKSPACE>] [--json] [--approve <PROPOSAL_ID> | --goal <GOAL>]
 ```
 
 开发中：
 
-- `scan → contract → mutate → evaluate → review` 垂直进化闭环；
+- `mutate → evaluate → review` 后续进化闭环；
 - 进化解释、历史、diff 与 replay；
 - 原子 apply/undo；
 - Claude Code、Codex、OpenCode、OpenClaw 等宿主适配；
@@ -143,6 +144,26 @@ cargo run -p sge-cli -- import ./code-review \
 ```
 
 导入过程只复制 manifest 声明的文件，并拒绝重复名称、缺失文件、符号链接和越界路径。
+
+### 扫描并批准提案
+
+`scan` 只使用 `evals/results` 中已确认的 Evidence 和 `memory/failures` 中已确认的
+Memory，提案写入独立运行目录，不会修改 Skill 标准源：
+
+```bash
+cargo run -p sge-cli -- scan skill:code-review \
+  --workspace ./my-lab \
+  --json
+```
+
+确认提案后，显式批准会在同一运行目录生成版本化 Contract：
+
+```bash
+cargo run -p sge-cli -- scan skill:code-review \
+  --workspace ./my-lab \
+  --approve prop-sql-injection-guard \
+  --json
+```
 
 ## 核心设计
 

@@ -4,6 +4,7 @@ members = [
     "crates/sge-cli",
     "crates/sge-domain",
     "crates/sge-eval",
+    "crates/sge-evolution",
     "crates/sge-protocol",
     "crates/sge-provider",
     "crates/sge-store",

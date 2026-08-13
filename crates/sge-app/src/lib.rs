@@ -1,5 +1,6 @@
 pub mod import;
 pub mod init;
+pub mod scan;
 pub mod validate;
 
 use std::path::PathBuf;
@@ -33,6 +34,24 @@ pub enum AppError {
     MissingDeclaredFile { declared: String },
     #[error("symlink or hardlink detected in declared file `{declared}`; refusing insecure import")]
     SymlinkRefused { declared: String },
+    #[error("invalid scan target `{target}`: {message}")]
+    InvalidScanTarget { target: String, message: String },
+    #[error("scan artifact is missing at {path}")]
+    MissingScanArtifact { path: PathBuf },
+    #[error("no trusted evidence exists for the scan target")]
+    NoTrustedEvidence,
+    #[error("invalid evidence document at {path}: {message}")]
+    InvalidEvidence { path: PathBuf, message: String },
+    #[error("invalid memory document at {path}: {message}")]
+    InvalidMemory { path: PathBuf, message: String },
+    #[error("unknown proposal `{proposal_id}`")]
+    UnknownProposal { proposal_id: String },
+    #[error("failed to persist scan output at {path}: {message}")]
+    ScanPersist { path: PathBuf, message: String },
+    #[error("invalid workspace for scan at {path}: {message}")]
+    InvalidScanWorkspace { path: PathBuf, message: String },
+    #[error("invalid scan approval options: {message}")]
+    InvalidScanApproval { message: String },
 }
 
 impl AppError {
@@ -48,6 +67,15 @@ impl AppError {
             Self::PathTraversal { .. } => "SGE-IMPORT-004",
             Self::MissingDeclaredFile { .. } => "SGE-IMPORT-005",
             Self::SymlinkRefused { .. } => "SGE-IMPORT-006",
+            Self::InvalidScanTarget { .. } => "SGE-SCAN-001",
+            Self::MissingScanArtifact { .. } => "SGE-SCAN-002",
+            Self::NoTrustedEvidence => "SGE-SCAN-003",
+            Self::InvalidEvidence { .. } => "SGE-SCAN-004",
+            Self::InvalidMemory { .. } => "SGE-SCAN-005",
+            Self::UnknownProposal { .. } => "SGE-SCAN-006",
+            Self::ScanPersist { .. } => "SGE-SCAN-007",
+            Self::InvalidScanWorkspace { .. } => "SGE-SCAN-008",
+            Self::InvalidScanApproval { .. } => "SGE-SCAN-009",
         }
     }
 }

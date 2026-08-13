@@ -890,6 +890,7 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "sge-domain",
+ "sge-evolution",
  "sge-protocol",
  "sge-store",
  "sha2",
@@ -907,6 +908,7 @@ dependencies = [
  "predicates",
  "serde_json",
  "sge-app",
+ "tempfile",
 ]
 
 [[package]]
@@ -928,6 +930,17 @@ dependencies = [
  "sge-protocol",
  "sha2",
  "tempfile",
+ "thiserror",
+]
+
+[[package]]
+name = "sge-evolution"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sge-domain",
+ "sge-protocol",
  "thiserror",
 ]
 
