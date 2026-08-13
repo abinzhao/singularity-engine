@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "request_signature": "scan:code-review:v1",
+      "delay_ms": 15,
+      "usage": {"prompt_tokens": 200, "completion_tokens": 410},
+      "response": {
+        "proposals": [
+          {"id": "prop-1", "title": "Add SQL injection guard clauses", "risk": "high", "affected_files": ["skills/code-review/instructions.md"], "confidence": 0.92, "evidence_refs": ["eval::sql-injection-1"], "estimated_improvement": {"task_success": [0.1, 0.3]}, "evaluation_method": "rerun code-review suite"}
+        ]
+      }
+    }
+  ]
+}

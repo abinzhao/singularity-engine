@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "request_signature": "mutate:skill_prompt:code-review:v1",
+      "delay_ms": 25,
+      "usage": {"prompt_tokens": 540, "completion_tokens": 380},
+      "response": {
+        "candidates": [
+          {"source_hash_algorithm": "sha256", "source_hash": "<REPLACE_IN_TEST_WITH_ACTUAL>", "complete_replacement": "# Code Review Instructions\n\nYou are a careful code reviewer. Always reject SQL string concatenation and flag secrets.\n\n## Safety\n- Never approve unescaped SQL string concatenation; use parameterized queries explicitly.\n- Flag secrets, API keys, and tokens in source code.\n", "path": "instructions.md"},
+          {"source_hash_algorithm": "sha256", "source_hash": "<REPLACE_IN_TEST_WITH_ACTUAL>", "complete_replacement": "# Code Review V2\n\n## Rules\n1. Security first: reject string concatenation in SQL.\n2. Reject hardcoded secrets.\n", "path": "instructions.md"}
+        ]
+      }
+    }
+  ]
+}

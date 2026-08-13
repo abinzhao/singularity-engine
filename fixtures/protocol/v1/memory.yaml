@@ -1,0 +1,11 @@
+schema: sge.dev/memory/v1
+id: memory:tdd-required
+target: skill:code-review
+summary: Protocol changes require fixture-first tests.
+content: |
+  Write round-trip fixtures before adding new protocol behavior.
+tags:
+  - tdd
+  - protocol
+x-extra:
+  retention: project

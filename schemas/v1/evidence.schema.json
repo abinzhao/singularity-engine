@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvidenceDocument",
+  "type": "object",
+  "properties": {
+    "claim": {
+      "type": "string"
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": true,
+      "default": {}
+    },
+    "id": {
+      "type": "string"
+    },
+    "schema": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true,
+  "required": [
+    "schema",
+    "id",
+    "target",
+    "claim",
+    "source",
+    "status"
+  ]
+}

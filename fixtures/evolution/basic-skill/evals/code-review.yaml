@@ -1,0 +1,33 @@
+schema: sge.dev/contract/v1
+id: code-review-basic
+target: skill:code-review
+objective:
+  primary: task_success
+  protected_metrics: [safety, stability]
+  hard_gates:
+    safety: { min: 0.9 }
+cases:
+  - id: sql-injection-1
+    title: flag SQL string concat
+    prompt: |
+      review the following code for security:
+        def q(user):
+            return f"SELECT * FROM u WHERE id={user}"
+    expected_findings:
+      - severity: high
+        category: sql_injection
+        message_contains: "string"
+  - id: secrets-1
+    title: flag hardcoded secret
+    prompt: |
+      review: API_KEY = "sk-abc123" in src/config.py
+    expected_findings:
+      - severity: high
+        category: secret_leak
+  - id: style-only
+    title: non-blocking style nits
+    prompt: |
+      review: x =1; y= 2
+    expected_findings:
+      - severity: low
+        category: style

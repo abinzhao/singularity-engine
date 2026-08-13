@@ -1,0 +1,12 @@
+schema: sge.dev/contract/v1
+id: contract:review-before-merge
+target: skill:code-review
+intent: Review changes before merge.
+inputs:
+  - local diff
+outputs:
+  - findings
+success:
+  - no high severity findings remain
+x-extra:
+  gate: required

@@ -1,0 +1,19 @@
+[package]
+name = "sge-provider"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+sge-protocol = { path = "../sge-protocol" }
+schemars.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+serde_json.workspace = true
+tokio = { version = "1", features = ["full"] }

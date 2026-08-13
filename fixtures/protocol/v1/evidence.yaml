@@ -1,0 +1,10 @@
+schema: sge.dev/evidence/v1
+id: evidence:fixture-tests
+target: skill:code-review
+claim: Fixture round-trip tests pass.
+source: cargo test -p sge-protocol --test fixtures
+status: passing
+details:
+  command: cargo test -p sge-protocol --test fixtures
+x-extra:
+  captured_by: protocol-fixtures

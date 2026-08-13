@@ -1,0 +1,11 @@
+schema: sge.dev/artifact/v1
+id: code-review-skill-v1
+kind: skill
+name: code-review
+title: Code Review Skill
+summary: Basic code review with safety rules.
+body: see instructions.md
+files:
+  - path: instructions.md
+    required: true
+x-extra: test-fixture

@@ -1,0 +1,10 @@
+schema: sge.dev/artifact/v1
+id: skill:code-review
+kind: skill
+name: code-review
+title: Code Review Skill
+summary: Reviews local changes for correctness and missing tests.
+body: |
+  Run a focused review against the current diff and report actionable findings.
+x-extra:
+  owner: protocol-fixtures

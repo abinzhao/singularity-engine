@@ -1,0 +1,21 @@
+[package]
+name = "sge-cli"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "sge"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+sge-app = { path = "../sge-app" }
+serde_json.workspace = true
+
+[dev-dependencies]
+assert_cmd.workspace = true
+predicates.workspace = true
+serde_json.workspace = true

@@ -1,0 +1,10 @@
+schema: sge.dev/adapter/v1
+id: adapter:local-files
+target: skill:code-review
+runtime: local
+command: cargo test -p sge-protocol
+capabilities:
+  - read-files
+  - run-tests
+x-extra:
+  isolation: workspace
