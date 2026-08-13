@@ -65,6 +65,9 @@ fn recovery_classifies_terminal_and_non_terminal_states() {
 
     for state in [
         JournalState::Prepared,
+        JournalState::Baseline,
+        JournalState::Diagnosed,
+        JournalState::Approved,
         JournalState::Mutating,
         JournalState::Evaluating,
         JournalState::ReviewPending,

@@ -1,6 +1,12 @@
+pub mod apply;
+pub mod evolve;
+pub mod explain;
+pub mod history;
 pub mod import;
 pub mod init;
+pub mod replay;
 pub mod scan;
+pub mod undo;
 pub mod validate;
 
 use std::path::PathBuf;
@@ -52,6 +58,10 @@ pub enum AppError {
     InvalidScanWorkspace { path: PathBuf, message: String },
     #[error("invalid scan approval options: {message}")]
     InvalidScanApproval { message: String },
+    #[error("evolution failed at {path}: {message}")]
+    Evolution { path: PathBuf, message: String },
+    #[error("standard source changed during evolution at {path}")]
+    StandardSourceMutated { path: PathBuf },
 }
 
 impl AppError {
@@ -76,6 +86,8 @@ impl AppError {
             Self::ScanPersist { .. } => "SGE-SCAN-007",
             Self::InvalidScanWorkspace { .. } => "SGE-SCAN-008",
             Self::InvalidScanApproval { .. } => "SGE-SCAN-009",
+            Self::Evolution { .. } => "SGE-EVOLVE-001",
+            Self::StandardSourceMutated { .. } => "SGE-EVOLVE-002",
         }
     }
 }

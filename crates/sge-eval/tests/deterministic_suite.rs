@@ -222,6 +222,36 @@ fn metric_comparison_respects_hard_gates_not_universal_score() {
 }
 
 #[test]
+fn candidate_must_not_regress_protected_metrics_from_baseline() {
+    let objective = Objective {
+        primary: "task_success".to_string(),
+        protected_metrics: vec!["safety".to_string(), "stability".to_string()],
+        hard_gates: BTreeMap::new(),
+    };
+    let baseline = MetricVector {
+        task_success: 0.6,
+        safety: 1.0,
+        latency_p95_ms: 20,
+        token_cost: 300,
+        stability: 1.0,
+        compatibility: 1.0,
+    };
+    let candidate = MetricVector {
+        task_success: 1.0,
+        safety: 0.9,
+        latency_p95_ms: 10,
+        token_cost: 200,
+        stability: 1.0,
+        compatibility: 1.0,
+    };
+
+    assert_eq!(
+        objective.protected_regressions(&candidate, &baseline),
+        vec!["safety"]
+    );
+}
+
+#[test]
 fn normalized_replay_ignores_case_order_timestamps_and_paths() {
     let suite = load_fixture_suite();
 

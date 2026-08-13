@@ -74,6 +74,9 @@ impl AppendOnlyJournal {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum JournalState {
     Prepared,
+    Baseline,
+    Diagnosed,
+    Approved,
     Mutating,
     Evaluating,
     ReviewPending,

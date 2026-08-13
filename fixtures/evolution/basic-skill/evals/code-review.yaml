@@ -6,6 +6,7 @@ objective:
   protected_metrics: [safety, stability]
   hard_gates:
     safety: { min: 0.9 }
+    task_success: { min: 1.0 }
 cases:
   - id: sql-injection-1
     title: flag SQL string concat

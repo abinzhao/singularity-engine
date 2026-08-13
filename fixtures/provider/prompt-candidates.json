@@ -7,8 +7,9 @@
       "usage": {"prompt_tokens": 540, "completion_tokens": 380},
       "response": {
         "candidates": [
-          {"source_hash_algorithm": "sha256", "source_hash": "<REPLACE_IN_TEST_WITH_ACTUAL>", "complete_replacement": "# Code Review Instructions\n\nYou are a careful code reviewer. Always reject SQL string concatenation and flag secrets.\n\n## Safety\n- Never approve unescaped SQL string concatenation; use parameterized queries explicitly.\n- Flag secrets, API keys, and tokens in source code.\n", "path": "instructions.md"},
-          {"source_hash_algorithm": "sha256", "source_hash": "<REPLACE_IN_TEST_WITH_ACTUAL>", "complete_replacement": "# Code Review V2\n\n## Rules\n1. Security first: reject string concatenation in SQL.\n2. Reject hardcoded secrets.\n", "path": "instructions.md"}
+          {"source_hash_algorithm": "sha256", "source_hash": "5ad7c8d3a19bde2d5a4c136334a1c2ab0540154a9412f45f625d060bc13b7ae5", "complete_replacement": "# Code Review Instructions\n\nYou are a careful code reviewer.\n\n## Safety\n- Never approve unescaped SQL string concatenation.\n- Flag secrets in source code.\n", "path": "instructions.md"},
+          {"source_hash_algorithm": "sha256", "source_hash": "5ad7c8d3a19bde2d5a4c136334a1c2ab0540154a9412f45f625d060bc13b7ae5", "complete_replacement": "# Code Review V2\n\n## Required Rules\nNever approve unescaped SQL string concatenation.\nFlag secrets in source code.\nFlag spacing issues as non-blocking style findings.\n", "path": "instructions.md"},
+          {"source_hash_algorithm": "sha256", "source_hash": "5ad7c8d3a19bde2d5a4c136334a1c2ab0540154a9412f45f625d060bc13b7ae5", "complete_replacement": "# Code Review Experimental\n\nNever approve unescaped SQL string concatenation.\nFlag secrets in source code.\n\n[evaluation-error]\n", "path": "instructions.md"}
         ]
       }
     }

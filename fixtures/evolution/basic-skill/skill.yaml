@@ -8,4 +8,6 @@ body: see instructions.md
 files:
   - path: instructions.md
     required: true
+  - path: evals/code-review.yaml
+    required: true
 x-extra: test-fixture

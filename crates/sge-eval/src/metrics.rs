@@ -55,11 +55,11 @@ impl Objective {
             (false, true) => ComparisonOutcome::AHardGateViolated,
             (true, false) => ComparisonOutcome::BHardGateViolated,
             (true, true) => {
-                let av = self.get_primary(a);
-                let bv = self.get_primary(b);
-                if av > bv {
+                let av = self.metric_value(a, &self.primary);
+                let bv = self.metric_value(b, &self.primary);
+                if self.is_better(&self.primary, av, bv) {
                     ComparisonOutcome::ABetter
-                } else if bv > av {
+                } else if self.is_better(&self.primary, bv, av) {
                     ComparisonOutcome::BBetter
                 } else {
                     ComparisonOutcome::Tie
@@ -68,34 +68,68 @@ impl Objective {
         }
     }
 
-    fn respects_gates(&self, m: &MetricVector) -> bool {
+    pub fn gate_violations(&self, metrics: &MetricVector) -> Vec<String> {
+        let mut violations = Vec::new();
         for (metric, gate) in &self.hard_gates {
-            let value = self.get_metric(m, metric);
+            let value = self.metric_value(metrics, metric);
             if let Some(min) = gate.min
                 && value < min
             {
-                return false;
+                violations.push(format!("{metric} below minimum {min}"));
             }
             if let Some(max) = gate.max
                 && value > max
             {
-                return false;
+                violations.push(format!("{metric} above maximum {max}"));
             }
         }
-        true
+        violations
     }
 
-    fn get_primary(&self, m: &MetricVector) -> f64 {
-        self.get_metric(m, &self.primary)
+    pub fn protected_regressions(
+        &self,
+        candidate: &MetricVector,
+        baseline: &MetricVector,
+    ) -> Vec<String> {
+        self.protected_metrics
+            .iter()
+            .filter(|metric| {
+                let candidate_value = self.metric_value(candidate, metric);
+                let baseline_value = self.metric_value(baseline, metric);
+                self.is_better(metric, baseline_value, candidate_value)
+            })
+            .cloned()
+            .collect()
     }
 
-    fn get_metric(&self, m: &MetricVector, name: &str) -> f64 {
+    pub fn primary_value(&self, metrics: &MetricVector) -> f64 {
+        self.metric_value(metrics, &self.primary)
+    }
+
+    pub fn primary_is_better(&self, candidate: f64, incumbent: f64) -> bool {
+        self.is_better(&self.primary, candidate, incumbent)
+    }
+
+    fn respects_gates(&self, metrics: &MetricVector) -> bool {
+        self.gate_violations(metrics).is_empty()
+    }
+
+    fn metric_value(&self, metrics: &MetricVector, name: &str) -> f64 {
         match name {
-            "task_success" => m.task_success,
-            "safety" => m.safety,
-            "stability" => m.stability,
-            "compatibility" => m.compatibility,
+            "task_success" => metrics.task_success,
+            "safety" => metrics.safety,
+            "stability" => metrics.stability,
+            "compatibility" => metrics.compatibility,
+            "latency_p95_ms" => metrics.latency_p95_ms as f64,
+            "token_cost" => metrics.token_cost as f64,
             _ => 0.0,
+        }
+    }
+
+    fn is_better(&self, metric: &str, candidate: f64, incumbent: f64) -> bool {
+        match metric {
+            "latency_p95_ms" | "token_cost" => candidate < incumbent,
+            _ => candidate > incumbent,
         }
     }
 }

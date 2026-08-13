@@ -7,8 +7,15 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+schemars.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+sha2.workspace = true
 sge-domain = { path = "../sge-domain" }
 sge-protocol = { path = "../sge-protocol" }
+sge-provider = { path = "../sge-provider" }
 thiserror.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio = { version = "1", features = ["macros", "rt"] }

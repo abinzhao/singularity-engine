@@ -31,6 +31,8 @@ SINGULARITY ENGINE 以“资产协议 + 多维评测 + 内部 Git 谱系 + 人�
 - append-only journal 与中断恢复分类；
 - Skill 安全导入、声明文件白名单和路径逃逸防护；
 - 多维 `MetricVector`、硬门优先比较和确定性评测；
+- recorded provider 驱动的安全 Prompt 变异和三候选隔离评估；
+- baseline、受保护指标和主目标驱动的候选选择；
 - 归一化 replay hash，屏蔽 case 顺序、时间戳和本机路径差异；
 - CLI JSON 输出、架构依赖检查和 CI 质量门禁。
 
@@ -40,13 +42,18 @@ SINGULARITY ENGINE 以“资产协议 + 多维评测 + 内部 Git 谱系 + 人�
 sge init [PATH] [--json]
 sge import <PATH> [--workspace <WORKSPACE>] [--json]
 sge scan <TARGET> [--workspace <WORKSPACE>] [--json] [--approve <PROPOSAL_ID> | --goal <GOAL>]
+sge evolve <TARGET> --approve <PROPOSAL_ID> --provider-fixture <PATH> [--candidates 3] [--workspace <WORKSPACE>] [--json]
+sge test [<TARGET> [--candidate <WORKTREE>] | --replay <RUN_ID>] [--workspace <WORKSPACE>] [--json]
+sge explain <RUN_ID> [--workspace <WORKSPACE>] [--json]
+sge history <TARGET> [--workspace <WORKSPACE>] [--json]
+sge diff <REVISION_A> <REVISION_B> [--workspace <WORKSPACE>] [--json]
+sge apply <RUN_ID> --approve [--workspace <WORKSPACE>] [--json]
+sge undo <RUN_ID> [--workspace <WORKSPACE>] [--json]
+sge undo --revision <REVISION> --target <TARGET> [--workspace <WORKSPACE>] [--json]
 ```
 
 开发中：
 
-- `mutate → evaluate → review` 后续进化闭环；
-- 进化解释、历史、diff 与 replay；
-- 原子 apply/undo；
 - Claude Code、Codex、OpenCode、OpenClaw 等宿主适配；
 - 统一源 Singularity Skill。
 
@@ -164,6 +171,80 @@ cargo run -p sge-cli -- scan skill:code-review \
   --approve prop-sql-injection-guard \
   --json
 ```
+
+### 生成并评估隔离候选
+
+当前 P1 使用 recorded provider fixture 运行可复现的离线进化：
+
+```bash
+cargo run -p sge-cli -- evolve skill:code-review \
+  --workspace ./my-lab \
+  --approve prop-sql-injection-guard \
+  --provider-fixture ./fixtures/provider/prompt-candidates.json \
+  --candidates 3 \
+  --json
+```
+
+每个候选位于 `.singularity/worktrees/<run-id>/<candidate-id>`，拥有独立 revision
+和评估证据。编排按硬门、受保护指标、主目标依次筛选，并停在
+`ReviewPending`；此阶段不会修改 `skills/code-review` 标准源。
+
+重新评估 baseline 或指定候选：
+
+```bash
+cargo run -p sge-cli -- test skill:code-review --workspace ./my-lab --json
+cargo run -p sge-cli -- test skill:code-review \
+  --workspace ./my-lab \
+  --candidate ./.singularity/worktrees/<run-id>/<candidate-id> \
+  --json
+```
+
+每次 evolve run 会保存 `contract.yaml`、`baseline.json`、`proposals.json`、候选评估、
+`decision.md`、`mutation.patch` 和 `replay.yaml`。`decision.md` 只从 typed metrics、
+淘汰原因、证据路径与 SHA-256 哈希生成，不把模型原文当作可信解释。
+
+读取和复放证据：
+
+```bash
+cargo run -p sge-cli -- explain <run-id> --workspace ./my-lab
+cargo run -p sge-cli -- history skill:code-review --workspace ./my-lab --json
+cargo run -p sge-cli -- diff <baseline-revision> <candidate-revision> \
+  --workspace ./my-lab
+cargo run -p sge-cli -- test --replay <run-id> --workspace ./my-lab --json
+```
+
+Replay 会从内部不可变 revision 重新评估 baseline 与候选，同时校验持久化 evidence
+文件的 SHA-256；任一指标复放哈希或 evidence 哈希变化都会返回 mismatch。
+
+### 应用与撤销已验证候选
+
+`apply` 只接受处于 `ReviewPending`、Replay 通过且拥有获胜候选的 run，并要求显式
+`--approve`：
+
+```bash
+cargo run -p sge-cli -- apply <run-id> \
+  --workspace ./my-lab \
+  --approve \
+  --json
+```
+
+应用事务以整个 `skills/<name>` 目录为单位。在同一父目录恢复 staging，校验标准源
+仍等于进化 baseline，再通过 backup 和目录 rename 切换。备份后发生故障时会恢复原目录，
+不会留下半写入的 Skill。成功后会生成新的 applied revision 和 `apply.json`。
+
+按 applied run 或指定内部 revision 撤销：
+
+```bash
+cargo run -p sge-cli -- undo <run-id> --workspace ./my-lab --json
+cargo run -p sge-cli -- undo \
+  --revision <revision> \
+  --target skill:code-review \
+  --workspace ./my-lab \
+  --json
+```
+
+Undo 不重写 Git 历史，而是把目标 revision 恢复到标准目录后创建新的 restoration
+revision。若标准 Skill 在 review 或 apply 后被用户修改，apply/undo 会拒绝覆盖。
 
 ## 核心设计
 

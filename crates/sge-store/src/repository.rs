@@ -14,10 +14,22 @@ impl Revision {
     pub fn as_str(&self) -> &str {
         &self.0
     }
+
+    pub fn parse(input: &str) -> Result<Self, StoreError> {
+        Oid::from_str(input)?;
+        Ok(Self(input.to_string()))
+    }
 }
 
 pub trait LineageRepository {
     fn snapshot(&self, tree: &Path, metadata: serde_json::Value) -> Result<Revision, StoreError>;
+
+    fn snapshot_candidate(
+        &self,
+        parent: &Revision,
+        tree: &Path,
+        metadata: serde_json::Value,
+    ) -> Result<Revision, StoreError>;
 
     fn checkout_candidate(&self, parent: &Revision, target: &Path) -> Result<(), StoreError>;
 
@@ -92,6 +104,37 @@ impl LineageRepository for GitLineageRepository {
                 &[],
             )?,
         };
+
+        Ok(Revision(commit_id.to_string()))
+    }
+
+    fn snapshot_candidate(
+        &self,
+        parent: &Revision,
+        tree: &Path,
+        metadata: serde_json::Value,
+    ) -> Result<Revision, StoreError> {
+        let repo = self.open()?;
+        let tree_id = write_tree_from_directory(&repo, tree)?;
+        let tree = repo.find_tree(tree_id)?;
+        let parent_id = Oid::from_str(parent.as_str())?;
+        let parent_commit = repo.find_commit(parent_id)?;
+        let signature = Signature::now("Singularity Engine", "sge@local")?;
+        let message = serde_json::to_string(&metadata)?;
+        let commit_id = repo.commit(
+            None,
+            &signature,
+            &signature,
+            &message,
+            &tree,
+            &[&parent_commit],
+        )?;
+        repo.reference(
+            &format!("refs/sge/candidates/{commit_id}"),
+            commit_id,
+            true,
+            "record candidate revision",
+        )?;
 
         Ok(Revision(commit_id.to_string()))
     }

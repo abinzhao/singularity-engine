@@ -890,12 +890,15 @@ dependencies = [
  "serde_json",
  "serde_yaml",
  "sge-domain",
+ "sge-eval",
  "sge-evolution",
  "sge-protocol",
+ "sge-provider",
  "sge-store",
  "sha2",
  "tempfile",
  "thiserror",
+ "tokio",
  "walkdir",
 ]
 
@@ -907,8 +910,11 @@ dependencies = [
  "clap",
  "predicates",
  "serde_json",
+ "serde_yaml",
  "sge-app",
  "tempfile",
+ "tokio",
+ "walkdir",
 ]
 
 [[package]]
@@ -937,11 +943,16 @@ dependencies = [
 name = "sge-evolution"
 version = "0.1.0"
 dependencies = [
+ "schemars",
  "serde",
  "serde_json",
  "sge-domain",
  "sge-protocol",
+ "sge-provider",
+ "sha2",
+ "tempfile",
  "thiserror",
+ "tokio",
 ]
 
 [[package]]

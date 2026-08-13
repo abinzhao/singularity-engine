@@ -13,9 +13,11 @@ impl RecoveryClassifier {
     pub fn classify(state: JournalState) -> RecoveryAction {
         match state {
             JournalState::Completed | JournalState::Aborted => RecoveryAction::Terminal(state),
-            JournalState::Prepared | JournalState::ReviewPending => {
-                RecoveryAction::Resumable(state)
-            }
+            JournalState::Prepared
+            | JournalState::Baseline
+            | JournalState::Diagnosed
+            | JournalState::Approved
+            | JournalState::ReviewPending => RecoveryAction::Resumable(state),
             JournalState::Mutating | JournalState::Evaluating | JournalState::Applying => {
                 RecoveryAction::Abortable(state)
             }
