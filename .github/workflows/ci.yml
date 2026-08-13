@@ -49,3 +49,86 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo xtask architecture
+
+  p1-vertical-e2e:
+    name: p1-vertical-e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build recorded-provider CLI
+        run: cargo build -p sge-cli
+      - name: Run isolated Skill evolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          workspace="${RUNNER_TEMP}/sge-p1-demo"
+          cli="${GITHUB_WORKSPACE}/target/debug/sge"
+          fixture="${GITHUB_WORKSPACE}/fixtures/evolution/basic-skill"
+          provider="${GITHUB_WORKSPACE}/fixtures/provider/prompt-candidates.json"
+
+          "${cli}" init "${workspace}" --json
+          "${cli}" import "${fixture}" --workspace "${workspace}" --json
+          mkdir -p "${workspace}/evals/results"
+          cp "${GITHUB_WORKSPACE}/fixtures/evolution/evidence/"*.yaml \
+            "${workspace}/evals/results/"
+
+          "${cli}" scan skill:code-review \
+            --workspace "${workspace}" \
+            --json \
+            > "${workspace}/scan.json"
+          "${cli}" evolve skill:code-review \
+            --workspace "${workspace}" \
+            --approve prop-sql-injection-guard \
+            --provider-fixture "${provider}" \
+            --candidates 3 \
+            --json \
+            > "${workspace}/evolve.json"
+          run_id="$(jq -r '.run_id' "${workspace}/evolve.json")"
+          test -n "${run_id}"
+          test "${run_id}" != "null"
+
+          "${cli}" test --replay "${run_id}" \
+            --workspace "${workspace}" \
+            --json \
+            > "${workspace}/replay.json"
+          "${cli}" explain "${run_id}" \
+            --workspace "${workspace}" \
+            --json \
+            > "${workspace}/explain.json"
+
+          before_hash="$(
+            find "${workspace}/skills/code-review" -type f -print0 \
+              | sort -z \
+              | xargs -0 sha256sum \
+              | sha256sum \
+              | cut -d' ' -f1
+          )"
+          "${cli}" apply "${run_id}" \
+            --workspace "${workspace}" \
+            --approve \
+            --json \
+            > "${workspace}/apply.json"
+          "${cli}" undo "${run_id}" \
+            --workspace "${workspace}" \
+            --json \
+            > "${workspace}/undo.json"
+          after_hash="$(
+            find "${workspace}/skills/code-review" -type f -print0 \
+              | sort -z \
+              | xargs -0 sha256sum \
+              | sha256sum \
+              | cut -d' ' -f1
+          )"
+          test "${before_hash}" = "${after_hash}"
+          printf '%s\n' "${run_id}" > "${workspace}/run-id.txt"
+      - name: Archive normalized P1 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-vertical-evidence
+          path: |
+            ${{ runner.temp }}/sge-p1-demo/*.json
+            ${{ runner.temp }}/sge-p1-demo/run-id.txt
+            ${{ runner.temp }}/sge-p1-demo/.singularity/runs/
+          include-hidden-files: true
+          if-no-files-found: error

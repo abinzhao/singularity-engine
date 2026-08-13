@@ -1,0 +1,7 @@
+schema: sge.dev/evidence/v1
+id: eval:sql-1
+target: skill:code-review
+claim: Missed SQL injection in concatenated query
+source: evaluation
+status: confirmed
+details: {}
