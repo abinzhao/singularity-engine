@@ -14,7 +14,7 @@ jobs:
     name: fmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo fmt --all -- --check
 
@@ -22,7 +22,7 @@ jobs:
     name: clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo clippy --workspace --all-targets -- -D warnings
 
@@ -30,7 +30,7 @@ jobs:
     name: unit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test --workspace
 
@@ -38,7 +38,7 @@ jobs:
     name: protocol-compat
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test -p sge-protocol
 
@@ -46,7 +46,7 @@ jobs:
     name: architecture
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo xtask architecture
 
@@ -54,7 +54,7 @@ jobs:
     name: p1-vertical-e2e
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - name: Build recorded-provider CLI
         run: cargo build -p sge-cli
@@ -123,7 +123,7 @@ jobs:
           test "${before_hash}" = "${after_hash}"
           printf '%s\n' "${run_id}" > "${workspace}/run-id.txt"
       - name: Archive normalized P1 evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: p1-vertical-evidence
           path: |

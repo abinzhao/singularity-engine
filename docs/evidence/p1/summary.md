@@ -77,7 +77,7 @@ Results:
 | Selection preserves multidimensional metrics | hard-gate and protected-metric tests | Passed |
 | Explanation and replay use typed evidence | evidence completeness, hash, and replay tests | Passed |
 | Apply and undo are fault-tested | backup fault injection, stale-source, full-tree restore tests | Passed |
-| CI uses no live model credentials | recorded fixture only `p1-vertical-e2e` job | Configured |
+| CI uses no live model credentials | recorded fixture only `p1-vertical-e2e` job | Passed |
 
 ## CI Evidence
 
@@ -87,7 +87,12 @@ The `p1-vertical-e2e` GitHub Actions job runs the same recorded flow and uploads
 - selected run ID
 - `.singularity/runs/` normalized evidence
 
-Remote execution remains pending until this CI change is pushed and GitHub Actions completes.
+GitHub Actions run
+[`31724855006`](https://github.com/abinzhao/singularity-engine/actions/runs/31724855006)
+completed successfully on 2026-08-14. All six jobs passed: formatting, Clippy, unit tests,
+protocol compatibility, architecture rules, and the P1 vertical E2E flow.
+
+The run archived `p1-vertical-evidence` as artifact `9190835284` (12,806 bytes).
 
 ## Residual Risk
 
