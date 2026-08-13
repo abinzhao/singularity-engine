@@ -301,7 +301,7 @@ docs: clarify local-first security boundary
 
 ## 许可证
 
-仓库代码元数据当前声明为 MIT。正式对外发布前将补齐许可证文件，并统一代码元数据与产品规格中的许可证描述。
+本项目基于 [MIT License](LICENSE) 开源。
 
 ## 致谢
 
