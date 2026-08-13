@@ -123,7 +123,7 @@ jobs:
           test "${before_hash}" = "${after_hash}"
           printf '%s\n' "${run_id}" > "${workspace}/run-id.txt"
       - name: Archive normalized P1 evidence
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: p1-vertical-evidence
           path: |
